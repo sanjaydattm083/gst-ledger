@@ -104,10 +104,17 @@ def save(df):
 
 def add(entry):
     df=st.session_state.df
-    inv=entry.get("invoice_id","")
-    if inv and inv in df["invoice_id"].values:
-        st.warning(f"⚠️ Invoice **{inv}** already exists! Duplicate skipped.")
+    inv=str(entry.get("invoice_id","")).strip()
+    if not inv:
+        st.error("❌ Invoice ID cannot be empty")
         return False
+    existing=df["invoice_id"].astype(str).str.strip().values
+    if inv in existing:
+        # find the existing entry details
+        dup=df[df["invoice_id"].astype(str).str.strip()==inv].iloc[0]
+        st.error(f"❌ **Duplicate Invoice!** Invoice `{inv}` already exists — Party: {dup.get('party_name','')} · Date: {dup.get('date','')} · ₹{dup.get('grand_total','')}")
+        return False
+    entry["invoice_id"]=inv
     st.session_state.df=pd.concat([df,pd.DataFrame([entry])],ignore_index=True)
     save(st.session_state.df)
     return True
@@ -330,6 +337,19 @@ with t3:
                 </div>
                 <div style="font-size:10px;color:#666;margin-top:3px;">Base ₹{float(row['taxable_amount']):,.0f} | {td}</div>
                 </div>""",unsafe_allow_html=True)
+
+            # ── TOTALS BAR ──
+            st.markdown(f"""<div style="background:#1a1a2e;border:2px solid #7c3aed;border-radius:10px;padding:14px;margin-top:8px;">
+                <div style="font-size:12px;color:#a78bfa;font-weight:700;margin-bottom:8px;">TOTAL — {len(f)} Entries · {sfy} {sq}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;">
+                    <div><span style="color:#888;">Taxable:</span> <b style="color:#eee;">₹{ta:,.2f}</b></div>
+                    <div><span style="color:#888;">CGST:</span> <b style="color:#4ade80;">₹{tc:,.2f}</b></div>
+                    <div><span style="color:#888;">SGST:</span> <b style="color:#4ade80;">₹{ts:,.2f}</b></div>
+                    <div><span style="color:#888;">IGST:</span> <b style="color:#facc15;">₹{ti:,.2f}</b></div>
+                    <div><span style="color:#888;">Transport:</span> <b style="color:#ccc;">₹{tt:,.2f}</b></div>
+                    <div><span style="color:#888;">Grand Total:</span> <b style="color:#e879f9;font-size:14px;">₹{tg:,.2f}</b></div>
+                </div>
+            </div>""",unsafe_allow_html=True)
         else: st.info(f"No entries for {sfy} {sq}")
     else: st.info("No entries yet")
 
