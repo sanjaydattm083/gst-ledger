@@ -14,7 +14,7 @@ from io import BytesIO
 
 HOME_STATE = "Madhya Pradesh"
 DATA_FILE = "bansal_ledger_data.csv"
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent"
 
 def get_api_key():
     try:
@@ -178,7 +178,7 @@ def extract_with_gemini(file_bytes, mime_type, api_key):
 # STREAMLIT APP
 # ──────────────────────────────────────────────
 
-st.set_page_config(page_title="Bunser Textiles GST Ledger", page_icon="🧵", layout="centered")
+st.set_page_config(page_title="Bansal Textiles GST Ledger", page_icon="🧵", layout="centered")
 
 st.markdown("""
 <style>
@@ -204,8 +204,8 @@ with c1:
     border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;
     font-weight:800;color:#fff;margin-top:8px;">B</div>""", unsafe_allow_html=True)
 with c2:
-    st.markdown("## Bunser Textiles")
-    st.caption("Huntergger Main Shop · GST Ledger")
+    st.markdown("## Bansal Textiles")
+    st.caption("Near Clocktower · GST Ledger")
 
 if "df" not in st.session_state:
     st.session_state.df = load_data()
@@ -426,7 +426,7 @@ with tab_ledger:
 
             # CSV download
             csv = filt.to_csv(index=False)
-            st.download_button("📥 Download CSV", csv, f"Bunser_{sel_fy}_{sel_q}.csv", "text/csv",
+            st.download_button("📥 Download CSV", csv, f"Bansal_{sel_fy}_{sel_q}.csv", "text/csv",
                                use_container_width=True)
 
             st.markdown("---")
@@ -517,4 +517,4 @@ with tab_alerts:
 - GSTR-9 late: ₹200/day (₹100 CGST + ₹100 SGST)""")
 
 st.markdown("---")
-st.caption("Bunser Textiles GST Ledger | Huntergger Main Shop")
+st.caption("Bansal Textiles GST Ledger | Near Clocktower")
